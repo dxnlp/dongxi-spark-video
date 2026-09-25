@@ -1,0 +1,15 @@
+[
+  {
+    "frames": 148,
+    "seconds": 6.541667,
+    "render_seconds": 156.71213388442993,
+    "label": "6.5 seconds"
+  },
+  {
+    "frames": 362,
+    "seconds": 15.041667,
+    "render_seconds": 263.8846457004547,
+    "label": "15 seconds",
+    "memory_profile": "capacity-84"
+  }
+]

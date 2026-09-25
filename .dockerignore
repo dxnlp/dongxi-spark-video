@@ -1,0 +1,5 @@
+**
+!docker/
+!docker/Dockerfile
+!scripts/
+!scripts/bootstrap.sh

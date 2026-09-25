@@ -1,0 +1,19 @@
+name: CPU checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python scripts/test.py
+      - run: python -m compileall -q portal scripts guard tests
+      - run: node --check portal/static/app.js
+      - run: bash -n scripts/bootstrap.sh scripts/install.sh scripts/download.sh

@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dongxi Spark Video</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Spark Video home"
+          ><span class="brand-icon">✳</span> Spark<span>Video</span></a
+        >
+        <div class="connection">
+          <span id="connection-dot" class="dot"></span
+          ><span id="connection-text">Connecting to Spark</span
+          ><span class="local-badge">LOCAL</span>
+        </div>
+      </header>
+      <main>
+        <section class="intro">
+          <div>
+            <div class="eyebrow">YOUR IDEAS, IN MOTION</div>
+            <h1>A prompt. A little motion.</h1>
+            <p>Create short films on your own DGX Spark.</p>
+          </div>
+          <div class="model-tag">
+            <span class="model-icon">✧</span>
+            <div><b>FastH3</b><span>One Spark · private workspace</span></div>
+          </div>
+        </section>
+        <div id="notice" class="notice" role="alert" hidden></div>
+        <div class="workspace">
+          <section class="panel composer">
+            <div class="section-label">
+              <span class="index">01</span>
+              <h2>Describe your scene</h2>
+              <span class="small-tag">PROMPT</span>
+            </div>
+            <form id="generate-form">
+              <label class="sr-only" for="prompt">Video prompt</label>
+              <textarea
+                id="prompt"
+                name="prompt"
+                maxlength="1200"
+                placeholder="Describe the scene, the movement, the light…"
+                required
+              ></textarea>
+              <div class="prompt-footer">
+                <span>A specific scene and one clear movement work well.</span
+                ><span id="char-count">0 / 1200</span>
+              </div>
+              <div class="ideas">
+                <span>Try a starting point</span>
+                <div class="chips">
+                  <button type="button" class="chip" data-example="alpine">
+                    Alpine sunrise ↗</button
+                  ><button type="button" class="chip" data-example="lanterns">
+                    Lantern-lit street ↗</button
+                  ><button type="button" class="chip" data-example="ocean">
+                    Ocean at dusk ↗
+                  </button>
+                </div>
+              </div>
+              <div class="settings">
+                <div>
+                  <label for="length">Length</label
+                  ><select id="length" aria-label="Video length">
+                    <option value="124">5.2 seconds</option>
+                  </select>
+                </div>
+                <div><span>Resolution</span><b>832 × 480</b></div>
+                <div><span>Sound</span><b>Included</b></div>
+              </div>
+              <details class="advanced">
+                <summary>Seed <span>Optional</span></summary>
+                <label for="seed">Reuse a seed to compare prompts</label
+                ><input
+                  id="seed"
+                  type="number"
+                  min="0"
+                  max="2147483647"
+                  step="1"
+                  placeholder="Random each time"
+                />
+              </details>
+              <button id="generate" class="generate" type="submit">
+                <span>Generate video</span><span aria-hidden="true">↗</span>
+              </button>
+              <p id="expectation" class="expectation">
+                Last benchmark: 139 seconds · one render at a time
+              </p>
+            </form>
+          </section>
+          <section class="panel preview">
+            <div class="section-label">
+              <span class="index">02</span>
+              <h2>Your preview</h2>
+              <span id="preview-tag" class="small-tag">RECENT RENDER</span>
+            </div>
+            <div class="screen">
+              <video
+                id="video"
+                controls
+                playsinline
+                preload="metadata"
+                hidden
+              ></video>
+              <div id="preview-placeholder" class="placeholder">
+                <div class="orbit"><span>✳</span></div>
+                <h3 id="placeholder-title">Room for your imagination</h3>
+                <p id="placeholder-copy">
+                  Your finished video will appear here.
+                </p>
+              </div>
+            </div>
+            <div class="preview-meta">
+              <div>
+                <strong id="video-title">Ready when you are</strong>
+                <p id="video-detail">A short scene, made locally.</p>
+              </div>
+              <a id="download" class="download" hidden download>↓ Download</a>
+            </div>
+            <div id="preview-progress" class="preview-progress" hidden>
+              <div>
+                <span id="preview-stage">Starting</span
+                ><strong id="preview-percent">0%</strong>
+              </div>
+              <div class="progress-track">
+                <div id="preview-progress-fill"></div>
+              </div>
+              <p>
+                <span id="preview-memory">Reading memory…</span
+                ><span id="preview-elapsed">00:00</span>
+              </p>
+            </div>
+          </section>
+        </div>
+        <section class="panel monitor">
+          <div class="monitor-top">
+            <div class="section-label">
+              <span class="index">03</span>
+              <h2>Live generation</h2>
+              <span id="job-state" class="state-pill">IDLE</span>
+            </div>
+            <button id="cancel" class="cancel" type="button" hidden>
+              Stop render
+            </button>
+          </div>
+          <div class="progress-heading">
+            <div>
+              <span id="stage">Ready for your next idea</span
+              ><span id="stage-detail"
+                >Progress follows the renderer’s actual stages.</span
+              >
+            </div>
+            <div class="progress-number">
+              <strong id="percent">0</strong><span>%</span>
+            </div>
+          </div>
+          <div
+            id="progress"
+            class="progress-track"
+            role="progressbar"
+            aria-label="Estimated generation progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <div id="progress-fill"></div>
+          </div>
+          <div class="progress-caption">
+            <span
+              >Estimated overall progress · 100% means the video is ready</span
+            ><span id="elapsed">00:00 elapsed</span>
+          </div>
+          <div class="memory-grid">
+            <div class="memory-main">
+              <div class="metric-label">
+                Unified memory in use <span id="memory-live">LIVE</span>
+              </div>
+              <div class="memory-value">
+                <strong id="memory-used">—</strong
+                ><span id="memory-total">GiB</span>
+              </div>
+              <div class="memory-track">
+                <div id="memory-fill"></div>
+                <div id="reserve-marker" title="32 GiB host reserve"></div>
+              </div>
+              <p id="memory-available">Waiting for Spark readings…</p>
+            </div>
+            <div class="memory-chart">
+              <div class="metric-label">Memory over the last 90 seconds</div>
+              <svg
+                id="memory-chart"
+                viewBox="0 0 500 100"
+                preserveAspectRatio="none"
+                role="img"
+                aria-label="Live unified memory usage chart"
+              >
+                <defs>
+                  <linearGradient
+                    id="chart-gradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop offset="0%" stop-color="#72dfc6" stop-opacity=".24" />
+                    <stop offset="100%" stop-color="#72dfc6" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <path id="chart-area" fill="url(#chart-gradient)" />
+                <path
+                  id="chart-line"
+                  fill="none"
+                  stroke="#72dfc6"
+                  stroke-width="2"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
+              <div class="chart-labels">
+                <span>90s ago</span><span>Now</span>
+              </div>
+            </div>
+            <div class="memory-secondary">
+              <div>
+                <span>GPU tensors</span><strong id="cuda-memory">—</strong>
+              </div>
+              <div>
+                <span>Elapsed time</span
+                ><strong id="elapsed-large">00:00</strong>
+              </div>
+              <p>
+                CPU and GPU share this memory. GPU tensors are already included
+                in the total.
+              </p>
+            </div>
+          </div>
+        </section>
+        <section class="history-section">
+          <div class="history-heading">
+            <h2>Recent renders <span id="history-count">0</span></h2>
+            <span>Saved on your Spark</span>
+          </div>
+          <div id="history" class="history">
+            <p class="empty-history">Your scenes will collect here.</p>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <span
+          ><span class="tiny-dot"></span> Runs on your Spark. No paid API.</span
+        ><span>5-minute render limit · memory protection active</span>
+      </footer>
+    </div>
+  </body>
+</html>
